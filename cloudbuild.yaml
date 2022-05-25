@@ -18,4 +18,5 @@
    - 'australia-southeast2'
  images:
  - 'gcr.io/$PROJECT_ID/cardamomprice:$COMMIT_SHA'
- 
+ options:
+   logging: CLOUD_LOGGING_ONLY
