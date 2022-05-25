@@ -14,7 +14,7 @@ import (
 func main() {
 
 	log.Print("starting server...")
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/cardamom", handler)
 
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
