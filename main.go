@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
@@ -25,19 +24,19 @@ func main() {
 
 	logger.Print("starting server...")
 	http.HandleFunc("/cardamom", handler)
-
+	appengine.Main()
 	// Determine port for HTTP service.
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		logger.Printf("defaulting to port %s", port)
-	}
+	// port := os.Getenv("PORT")
+	// if port == "" {
+	// 	port = "8080"
+	// 	logger.Printf("defaulting to port %s", port)
+	// }
 
-	// Start HTTP server.
-	logger.Printf("listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		logger.Fatal(err)
-	}
+	// // Start HTTP server.
+	// logger.Printf("listening on port %s", port)
+	// if err := http.ListenAndServe(":"+port, nil); err != nil {
+	// 	logger.Fatal(err)
+	// }
 
 }
 
