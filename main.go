@@ -89,6 +89,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
+	wc.Metadata = map[string]string{
+		"x-goog-meta-foo": "foo",
+		"x-goog-meta-bar": "bar",
+	}
 	io.Copy(wc, bytes.NewReader(byteResponse))
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
