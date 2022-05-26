@@ -13,11 +13,11 @@ import (
 	logger "log"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/appengine/file"
 	"google.golang.org/appengine/log"
 
 	"github.com/gocolly/colly"
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/file"
 )
 
 func main() {
@@ -47,12 +47,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	//[START get_default_bucket]
 	// Use `dev_appserver.py --default_gcs_bucket_name GCS_BUCKET_NAME`
 	// when running locally.
-	bucket, err := file.DefaultBucketName(ctx)
+	// bucket, err := file.DefaultBucketName(ctx)
+	// if err != nil {
+	// 	log.Errorf(ctx, "failed to get default GCS bucket name: %v", err)
+	// }
+	//[END get_default_bucket]
+	bucket, err := getBucketName(ctx)
 	if err != nil {
 		log.Errorf(ctx, "failed to get default GCS bucket name: %v", err)
+		return
 	}
-	//[END get_default_bucket]
-
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Errorf(ctx, "failed to create client: %v", err)
@@ -86,6 +90,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "\nsucceeded.\n")
 	}
 
+}
+
+func getBucketName(ctx context.Context) (string, error) {
+	if appengine.IsDevAppServer() {
+		return "staging.<APP_NAME>.appspot.com", nil
+	} else {
+		// determine the default bucket name
+		bucketName, err := file.DefaultBucketName(ctx)
+		if err != nil {
+			log.Errorf(ctx, "failed to get default GCS bucket name: %v", err)
+			return "", err
+		}
+
+		return bucketName, nil
+	}
 }
 
 func (d *demo) createFile(fileName string) {
