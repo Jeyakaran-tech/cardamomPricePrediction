@@ -92,8 +92,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	io.Copy(wc, bytes.NewReader(byteResponse))
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	fmt.Fprintf(w, "Demo GCS Application running from Version: %v\n", appengine.VersionID(ctx))
-	fmt.Fprintf(w, "Using bucket name: %v\n\n", bucket)
+
 	w.WriteHeader(http.StatusOK)
 	buf.WriteTo(w)
 	fmt.Fprintf(w, "\nsucceeded.\n")
