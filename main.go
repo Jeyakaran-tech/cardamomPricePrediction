@@ -33,7 +33,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fileName := "cardamom-jk-go"
 	buf := &bytes.Buffer{}
 
-	var writer io.Writer
 	var prices []Price
 	c := colly.NewCollector()
 
@@ -44,9 +43,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer client.Close()
-	fmt.Fprintf(writer, "Creating file /%v/%v\n", bucket, fileName)
-	wc := client.Bucket(bucket).Object(fileName).NewWriter(ctx)
 
+	wc := client.Bucket(bucket).Object(fileName).NewWriter(ctx)
 	//PROGRAMMING_LOGIC_FOR_DATA_EXTRACTION
 	for i := 0; i < 10; i++ {
 
