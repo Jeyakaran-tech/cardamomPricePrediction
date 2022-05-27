@@ -89,16 +89,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	logger.Println(byteResponse, "@@@@@@@@@@@@@@@@@@@@@")
 	statusResponse, errStatus := json.Marshal(status)
 	if errStatus != nil {
 		fmt.Println(errStatus)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
-
 	io.Copy(wc, bytes.NewReader(byteResponse))
 
 	// w.Header().Set("Content-Type", "text/plain; charset=utf-8")
@@ -111,7 +110,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "createFile: unable to close bucket %q, file %q: %v", bucket, fileName, err)
 		return
 	}
-
+	w.WriteHeader(http.StatusOK)
 }
 
 type Cardamom struct {
