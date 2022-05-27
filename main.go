@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -30,7 +28,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	bucket := "development-cardamomprice"
 	fileName := "cardamom-jk-go"
-	buf := &bytes.Buffer{}
+	// buf := &bytes.Buffer{}
 
 	var prices []Price
 	c := colly.NewCollector()
@@ -88,17 +86,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
-	wc.Metadata = map[string]string{
-		"x-goog-meta-foo": "foo",
-		"x-goog-meta-bar": "bar",
-	}
-	io.Copy(wc, bytes.NewReader(byteResponse))
+
+	// io.Copy(wc, bytes.NewReader(byteResponse))
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
 	w.WriteHeader(http.StatusOK)
-	buf.WriteTo(w)
-	fmt.Fprintf(w, "\nsucceeded.\n")
+
+	if _, err := wc.Write(byteResponse); err != nil {
+		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
+		return
+	}
+	if _, err := wc.Write(byteResponse); err != nil {
+		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
+		return
+	}
+	if err := wc.Close(); err != nil {
+		log.Errorf(ctx, "createFile: unable to close bucket %q, file %q: %v", bucket, fileName, err)
+		return
+	}
 
 }
 
