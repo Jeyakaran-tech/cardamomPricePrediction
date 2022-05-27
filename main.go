@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"strings"
 
 	logger "log"
 
@@ -100,19 +99,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	buf.WriteTo(w)
 	fmt.Fprintf(w, "\nsucceeded.\n")
-
-	if _, err := wc.Write([]byte("abcde\n")); err != nil {
-		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
-		return
-	}
-	if _, err := wc.Write([]byte(strings.Repeat("f", 1024*4) + "\n")); err != nil {
-		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
-		return
-	}
-	if err := wc.Close(); err != nil {
-		log.Errorf(ctx, "createFile: unable to close bucket %q, file %q: %v", bucket, fileName, err)
-		return
-	}
 
 }
 
