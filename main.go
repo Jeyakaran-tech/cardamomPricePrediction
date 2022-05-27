@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -29,6 +31,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	bucket := "development-cardamomprice"
 	fileName := "cardamom-jk-go"
 	// buf := &bytes.Buffer{}
+	status := Status{
+		Code:        "8200",
+		Description: "Success",
+	}
 
 	var prices []Price
 	c := colly.NewCollector()
@@ -83,15 +89,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	statusResponse, errStatus := json.Marshal(status)
+	if errStatus != nil {
+		fmt.Println(errStatus)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
 
-	// io.Copy(wc, bytes.NewReader(byteResponse))
+	io.Copy(wc, bytes.NewReader(byteResponse))
 
 	// w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-	if _, err := wc.Write(byteResponse); err != nil {
+	if _, err := wc.Write([]byte(statusResponse)); err != nil {
 		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
 		return
 	}
@@ -112,4 +124,9 @@ type Price struct {
 	Market string `json:"market,omitempty"`
 	Type   string `json:"type,omitempty"`
 	Price  string `json:"price,omitempty"`
+}
+
+type Status struct {
+	Code        string `json:"code,omitempty"`
+	Description string `json:"description,omitempty"`
 }
