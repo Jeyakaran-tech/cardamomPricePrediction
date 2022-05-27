@@ -83,20 +83,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-
+	w.WriteHeader(http.StatusOK)
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
 
 	// io.Copy(wc, bytes.NewReader(byteResponse))
 
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	// w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-	w.WriteHeader(http.StatusOK)
-
-	if _, err := wc.Write(byteResponse); err != nil {
-		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
-		return
-	}
 	if _, err := wc.Write(byteResponse); err != nil {
 		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
 		return
