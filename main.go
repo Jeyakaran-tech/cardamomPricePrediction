@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"time"
 
 	logger "log"
 
@@ -35,8 +34,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var prices []Price
 	c := colly.NewCollector()
 
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now())
-	defer cancel()
+	ctx := context.Background()
 
 	client, err := storage.NewClient(ctx)
 	if err != nil {
