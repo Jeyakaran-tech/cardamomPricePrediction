@@ -31,7 +31,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	bucket := "development-cardamomprice"
 	fileName := "cardamom-jk-go"
-	// buf := &bytes.Buffer{}
 
 	var prices []Price
 	c := colly.NewCollector()
@@ -73,6 +72,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		Code:        "8200",
 		Description: "Success",
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	byteResponse, err := json.Marshal(cardamom)
 	if err != nil {
 		fmt.Println(err)
@@ -96,7 +97,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(ctx, "createFile: unable to close bucket %q, file %q: %v", bucket, fileName, err)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+
 }
 
 type Cardamom struct {
