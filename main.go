@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	logger "log"
 
@@ -31,15 +32,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	bucket := "development-cardamomprice"
 	fileName := "cardamom-jk-go"
 	// buf := &bytes.Buffer{}
-	status := Status{
-		Code:        "8200",
-		Description: "Success",
-	}
 
 	var prices []Price
 	c := colly.NewCollector()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now())
+	defer cancel()
+
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Errorf(ctx, "failed to create client: %v", err)
@@ -49,48 +48,37 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	wc := client.Bucket(bucket).Object(fileName).NewWriter(ctx)
 	//PROGRAMMING_LOGIC_FOR_DATA_EXTRACTION
+
+	c.OnHTML("tr", func(e *colly.HTMLElement) {
+		price := Price{}
+		_, err := strconv.ParseInt(e.ChildText("td:nth-child(1)"), 10, 64)
+		if err == nil {
+			price.Sno = e.ChildText("td:nth-child(1)")
+			price.Date = e.ChildText("td:nth-child(2)")
+			price.Market = e.ChildText("td:nth-child(3)")
+			price.Type = e.ChildText("td:nth-child(4)")
+			price.Price = e.ChildText("td:nth-child(5)")
+			prices = append(prices, price)
+		}
+
+	})
 	for i := 0; i < 10; i++ {
-
-		c.OnHTML("div.tabstable tbody", func(e *colly.HTMLElement) {
-			e.ForEach("tr", func(j int, el *colly.HTMLElement) {
-				if j == 0 || j == 1 {
-					return
-				}
-
-				price := Price{}
-				if el.ChildText("td:nth-child(1)") != "" {
-					price.Sno = el.ChildText("td:nth-child(1)")
-				}
-				if el.ChildText("td:nth-child(2)") != "" {
-					price.Date = el.ChildText("td:nth-child(2)")
-				}
-				if el.ChildText("td:nth-child(3)") != "" {
-					price.Market = el.ChildText("td:nth-child(3)")
-				}
-				if el.ChildText("td:nth-child(4)") != "" {
-					price.Type = el.ChildText("td:nth-child(4)")
-				}
-				if el.ChildText("td:nth-child(5)") != "" {
-					price.Price = el.ChildText("td:nth-child(5)")
-				}
-
-				prices = append(prices, price)
-
-			})
-		})
 		url := fmt.Sprintf("http://www.indianspices.com/indianspices/marketing/price/domestic/daily-price-large.html?page=%s", strconv.Itoa(i))
 		c.Visit(url)
 	}
 	cardamom := Cardamom{
 		Prices: &prices,
 	}
+	cardamom.Status = Status{
+		Code:        "8200",
+		Description: "Success",
+	}
 	byteResponse, err := json.Marshal(cardamom)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	logger.Println(byteResponse, "@@@@@@@@@@@@@@@@@@@@@")
-	statusResponse, errStatus := json.Marshal(status)
+	statusResponse, errStatus := json.Marshal(cardamom.Status)
 	if errStatus != nil {
 		fmt.Println(errStatus)
 		return
@@ -99,8 +87,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
 	io.Copy(wc, bytes.NewReader(byteResponse))
-
-	// w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
 	if _, err := wc.Write([]byte(statusResponse)); err != nil {
 		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
@@ -115,17 +101,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 type Cardamom struct {
 	Prices *[]Price `json:"prices,omitempty"`
+	Status Status   `json:"status,omitempty"`
 }
 
+type Status struct {
+	Code        string `json:"code,omitempty"`
+	Description string `json:"description,omitempty"`
+}
 type Price struct {
 	Sno    string `json:"sno,omitempty"`
 	Date   string `json:"date,omitempty"`
 	Market string `json:"market,omitempty"`
 	Type   string `json:"type,omitempty"`
 	Price  string `json:"price,omitempty"`
-}
-
-type Status struct {
-	Code        string `json:"code,omitempty"`
-	Description string `json:"description,omitempty"`
 }
