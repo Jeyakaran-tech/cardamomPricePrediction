@@ -30,7 +30,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	bucket := "development-cardamomprice"
 	fileName := "cardamom-jk-go"
-
+	var emptyBytes []byte
 	var prices []Price
 	c := colly.NewCollector()
 
@@ -65,11 +65,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	cardamom := Cardamom{
 		Prices: &prices,
+		Status: Status{
+			Code:        "8200",
+			Description: "Success",
+		},
 	}
-	cardamom.Status = Status{
-		Code:        "8200",
-		Description: "Success",
-	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	byteResponse, err := json.Marshal(cardamom)
@@ -77,17 +78,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	statusResponse, errStatus := json.Marshal(cardamom.Status)
-	if errStatus != nil {
-		fmt.Println(errStatus)
-		return
-	}
+	// statusResponse, errStatus := json.Marshal(cardamom.Status)
+	// if errStatus != nil {
+	// 	fmt.Println(errStatus)
+	// 	return
+	// }
 
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
 	io.Copy(wc, bytes.NewReader(byteResponse))
 
-	if _, err := wc.Write([]byte(statusResponse)); err != nil {
+	if _, err := wc.Write([]byte(emptyBytes)); err != nil {
 		log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
 		return
 	}
