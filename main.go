@@ -92,9 +92,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 	//PROGRAMMING_LOGIC_FINISHED
-	wc.ContentType = "application/json"
-	bufferString := buffer.String()
-	io.Copy(wc, bytes.NewReader([]byte(bufferString)))
+	// wc.ContentType = "application/json"
+	// bufferString := buffer.String()
+	io.Copy(wc, bytes.NewReader(buffer.Bytes()))
 	writer.Flush()
 	// if _, err := wc.Write([]byte(emptyBytes)); err != nil {
 	// 	log.Errorf(ctx, "createFile: unable to write data to bucket %q, file %q: %v", bucket, fileName, err)
