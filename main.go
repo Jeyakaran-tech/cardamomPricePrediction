@@ -50,7 +50,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			prices = append(prices, price)
 		}
 	})
-	for i := 0; i < 10; i++ {
+	for i := 1; i <= 50; i++ {
 		url := fmt.Sprintf("http://www.indianspices.com/indianspices/marketing/price/domestic/daily-price-large.html?page=%s", strconv.Itoa(i))
 		c.Visit(url)
 	}
