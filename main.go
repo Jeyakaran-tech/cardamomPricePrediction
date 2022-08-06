@@ -18,7 +18,7 @@ import (
 
 func main() {
 	logger.Print("starting server...")
-	// http.HandleFunc("/cardamom", handler)
+	http.HandleFunc("/cardamom", handler)
 	appengine.Main()
 }
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			prices = append(prices, price)
 		}
 	})
-	for i := 1; i <= 10; i++ {
+	for i := 0; i < 10; i++ {
 		url := fmt.Sprintf("http://www.indianspices.com/indianspices/marketing/price/domestic/daily-price-large.html?page=%s", strconv.Itoa(i))
 		c.Visit(url)
 	}
@@ -69,6 +69,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	// statusResponse, errStatus := json.Marshal(cardamom.Status)
+	// if errStatus != nil {
+	// 	fmt.Println(errStatus)
+	// 	return
+	// }
 
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
@@ -92,6 +97,7 @@ type Status struct {
 	Code        string `json:"code,omitempty"`
 	Description string `json:"description,omitempty"`
 }
+
 type Price struct {
 	Sno    string `json:"sno,omitempty"`
 	Date   string `json:"date,omitempty"`
