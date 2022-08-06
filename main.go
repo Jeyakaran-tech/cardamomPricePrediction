@@ -18,7 +18,7 @@ import (
 
 func main() {
 	logger.Print("starting server...")
-	http.HandleFunc("/cardamom", handler)
+	// http.HandleFunc("/cardamom", handler)
 	appengine.Main()
 }
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -69,11 +69,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	// statusResponse, errStatus := json.Marshal(cardamom.Status)
-	// if errStatus != nil {
-	// 	fmt.Println(errStatus)
-	// 	return
-	// }
 
 	//PROGRAMMING_LOGIC_FINISHED
 	wc.ContentType = "application/json"
