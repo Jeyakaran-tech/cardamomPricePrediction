@@ -1,4 +1,4 @@
-package main
+package cardamom
 
 import (
 	"bytes"
@@ -6,22 +6,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	logger "log"
+
 	"net/http"
 	"strconv"
 
 	"cloud.google.com/go/storage"
 	"github.com/gocolly/colly"
-	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 )
 
-func main() {
-	logger.Print("starting server...")
-	http.HandleFunc("/cardamom", handler)
-	appengine.Main()
-}
-func handler(w http.ResponseWriter, r *http.Request) {
+func CardamomDataExtract(w http.ResponseWriter, r *http.Request) {
 
 	bucket := "development-cardamomprice"
 	fileName := "cardamom-jk-go"
