@@ -11,10 +11,14 @@ import (
 	"strconv"
 
 	"cloud.google.com/go/storage"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/gocolly/colly"
 	"google.golang.org/appengine/log"
 )
 
+func init() {
+	functions.HTTP("CardamomData", CardamomDataExtract)
+}
 func CardamomDataExtract(w http.ResponseWriter, r *http.Request) {
 
 	bucket := "development-cardamomprice"

@@ -10,7 +10,7 @@ require (
 
 require (
 	cloud.google.com/go v0.102.0 // indirect
-	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1 // indirect
+	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/xmlquery v1.3.10 // indirect
