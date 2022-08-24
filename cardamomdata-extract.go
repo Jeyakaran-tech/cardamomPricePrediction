@@ -19,6 +19,7 @@ import (
 func init() {
 	functions.HTTP("CardamomData", CardamomDataExtract)
 }
+
 func CardamomDataExtract(w http.ResponseWriter, r *http.Request) {
 
 	bucket := "development-cardamomprice"
